@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+    <style>
+        body { font-family: Arial; background: #f5f5f5; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        form { background: white; padding: 20px; border-radius: 10px; width: 300px; }
+        input { width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #1f6feb; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #155bb5; }
+        h2 { text-align: center; }
+    </style>
+</head>
+<body>
+    <form method="POST">
+        <h2>회원가입</h2>
+        <input type="text" name="username" placeholder="팀명 ex:고36팀" required>
+        <input type="text" name="password" placeholder="비밀번호" required>
+        <button type="submit">가입하기</button>
+        <p style="text-align:center; margin-top:10px;">
+            이미 계정이 있으신가요? <a href="/login">로그인</a>
+        </p>
+    </form>
+</body>
+</html>

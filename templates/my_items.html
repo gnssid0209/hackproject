@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>내 분실물</title>
+</head>
+<body>
+<h1>내 분실물</h1>
+<p>내 포인트: {{ user_point }}</p>
+
+{% if items %}
+    {% for item in items %}
+    <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+        <p><strong>{{ item.item }}</strong> ({{ item.point }} 포인트)</p>
+        {% for r in item.reports %}
+            {% if r.status == 'pending' %}
+            <form action="/my_items/action" method="post">
+                <input type="hidden" name="item_id" value="{{ item.id }}">
+                <input type="hidden" name="reporter" value="{{ r.reporter }}">
+                <button name="decision" value="yes">Yes</button>
+                <button name="decision" value="no">No</button>
+                신고자: {{ r.reporter }}
+            </form>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+{% else %}
+    <p>등록된 분실물이 없습니다.</p>
+{% endif %}
+<a href="/lost">분실물 등록 페이지로 돌아가기</a>
+</body>
+</html>

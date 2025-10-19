@@ -1,0 +1,52 @@
+{
+    "users": [
+        {
+            "username": null,
+            "password": null,
+            "point": 0
+        },
+        {
+            "username": "고36팀",
+            "password": "dlwoghd",
+            "point": 0
+        },
+        {
+            "username": "고20팀",
+            "password": "권도훈",
+            "point": 33
+        },
+        {
+            "username": "고1팀",
+            "password": "123",
+            "point": 0
+        }
+    ],
+    "lost_items": [
+        {
+            "item": "석인우",
+            "point": "22",
+            "characteristic": "",
+            "start_lat": "37.569802",
+            "start_lng": "126.971827",
+            "lat": "37.566159",
+            "lng": "126.972299",
+            "start_address": "흥국생명빌딩, 68, 새문안로, 신문로1가, 사직동, 종로구, 서울특별시, 03184, 대한민국",
+            "end_address": "르풀, 정동길, 정동, 소공동, 중구, 서울특별시, 04518, 대한민국",
+            "photo": "KakaoTalk_20240819_214841227_1760814422.jpg",
+            "owner": "고20팀"
+        },
+        {
+            "item": "석인우",
+            "point": "11",
+            "characteristic": "고자",
+            "start_lat": "37.570756",
+            "start_lng": "126.986418",
+            "lat": "37.566159",
+            "lng": "126.987448",
+            "start_address": "삼일대로, 종로2가, 종로1·2·3·4가동, 종로구, 서울특별시, 03164, 대한민국",
+            "end_address": "을지로2가사거리, 을지로, 을지로2가, 명동, 중구, 서울특별시, 04539, 대한민국",
+            "photo": "KakaoTalk_20240820_161757750_01_1760816054.jpg",
+            "owner": "고20팀"
+        }
+    ]
+}

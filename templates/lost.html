@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>분실물 신고·발견 공유</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    :root{--card-bg:#fff;--muted:#666}
+    body{font-family:Inter, Arial, sans-serif;margin:0;background:#f6f7fb;color:#111}
+    header{padding:16px 20px;background:#fff;border-bottom:1px solid #e6e9ef}
+    h1{margin:0;font-size:1.25rem}
+    .wrap{display:flex;gap:16px;padding:16px;max-width:1200px;margin:0 auto}
+    .map-wrap{flex:1;border-radius:10px;overflow:hidden;box-shadow:0 6px 18px rgba(20,24,40,0.06)}
+    #map{height:72vh;min-height:420px}
+    aside{width:360px}
+    .card{background:var(--card-bg);padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(20,24,40,0.04)}
+    label{display:block;font-weight:600;margin-top:8px}
+    input[type=text], input[type=file], textarea{width:100%;box-sizing:border-box;padding:8px;margin-top:6px;border:1px solid #e3e6ee;border-radius:8px}
+    .btn{display:inline-block;margin-top:10px;padding:10px 12px;border-radius:8px;background:#1f6feb;color:white;border:none;width:100%;cursor:pointer;font-weight:600}
+    .note{font-size:0.9rem;color:var(--muted);margin-top:8px}
+    .items{margin-top:12px;max-height:26vh;overflow:auto}
+    .item{padding:8px;border-bottom:1px dashed #eef2fb}
+    img.thumb{max-width:100%;border-radius:8px;margin-top:8px}
+    @media (max-width:900px){.wrap{flex-direction:column;padding:12px}aside{width:100%}#map{height:48vh}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>분실물 신고</h1>
+  </header>
+
+  <main class="wrap">
+    <section class="map-wrap card">
+      <div id="map"></div>
+      <p class="note">현재 내 위치를 기준으로 지도가 열리며, 터치 또는 클릭으로 위치를 선택할 수 있습니다.</p>
+    </section>
+
+    <aside>
+      <div class="card">
+       <!-- 파일 업로드를 위해 enctype 추가 -->
+       <form id="reportForm" action="/list" method="post" enctype="multipart/form-data">
+          <label for="item">잃어버린 물건</label>
+          <input id="item" name="item" type="text" placeholder="예: 검은색 지갑" required>
+
+          <label for="point">보상 포인트</label>
+          <input id="point" name="point" type="text" placeholder="보상 포인트" required>
+
+          <label for="item_characteristic">상세설명 (선택)</label>
+          <textarea id="item_characteristic" name="item_characteristic" rows="3" placeholder="잃어버린 물건의 특징"></textarea>
+
+          <input id="start_lat" name="start_lat" type="hidden">
+          <input id="start_lng" name="start_lng" type="hidden">
+          <input id="lat" name="lat" type="hidden" required>
+          <input id="lng" name="lng" type="hidden" required>
+          <input id="start_address" name="start_address" type="hidden" required>
+          <input id="end_address" name="end_address" type="hidden" required>
+
+          <label for="photo">사진 업로드</label>
+          <input id="photo" name="photo" type="file" accept="image/*">
+
+          <button class="btn" type="submit">신고하기</button>
+        </form>
+        <p class="note">주소를 선택하지 않으면 업로드가 차단됩니다.</p>
+      </div>
+
+      <div class="card items" id="items"></div>
+    </aside>
+  </main>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    let map;
+    let startMarker = null;
+    let endMarker = null;
+    let routeLine = null;
+    let clickStep = 0; // 0=시작, 1=도착
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(pos => initMap(pos.coords.latitude, pos.coords.longitude),
+                                              () => initMap(37.5665, 126.9780));
+    } else {
+      initMap(37.5665, 126.9780);
+    }
+
+    function initMap(lat, lng){
+      map = L.map('map').setView([lat, lng], 15);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution:'© OpenStreetMap contributors'
+      }).addTo(map);
+
+      L.circleMarker([lat, lng], {
+        radius: 10, color: '#0057e7', weight: 2,
+        fillColor: '#1f6feb', fillOpacity: 0.9
+      }).addTo(map).bindPopup('현재 위치').openPopup();
+
+      map.on('click', async (e) => {
+        const selLat = Number(e.latlng.lat.toFixed(6));
+        const selLng = Number(e.latlng.lng.toFixed(6));
+
+        if (clickStep === 0) {
+          if (startMarker) map.removeLayer(startMarker);
+          startMarker = L.marker([selLat, selLng]).addTo(map).bindPopup('출발 지점').openPopup();
+          document.getElementById('start_lat').value = selLat;
+          document.getElementById('start_lng').value = selLng;
+
+          // 출발 주소
+          try{
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${selLat}&lon=${selLng}&format=json&accept-language=ko`);
+            const data = await res.json();
+            document.getElementById('start_address').value = data.display_name || '';
+          }catch{ document.getElementById('start_address').value = ''; }
+
+          clickStep = 1;
+        } else if (clickStep === 1) {
+          if (endMarker) map.removeLayer(endMarker);
+          endMarker = L.marker([selLat, selLng]).addTo(map).bindPopup('도착 지점').openPopup();
+          document.getElementById('lat').value = selLat;
+          document.getElementById('lng').value = selLng;
+
+          // 도착 주소
+          try{
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${selLat}&lon=${selLng}&format=json&accept-language=ko`);
+            const data = await res.json();
+            document.getElementById('end_address').value = data.display_name || '';
+          }catch{ document.getElementById('end_address').value = ''; }
+
+          clickStep = 0;
+
+          if (routeLine) map.removeLayer(routeLine);
+          routeLine = L.polyline([
+            [startMarker.getLatLng().lat, startMarker.getLatLng().lng],
+            [endMarker.getLatLng().lat, endMarker.getLatLng().lng]
+          ], {color: 'blue', weight: 4}).addTo(map);
+        }
+      });
+    }
+
+    document.getElementById('reportForm').addEventListener('submit', function(e){
+      if(!document.getElementById('start_address').value || !document.getElementById('end_address').value){
+        e.preventDefault();
+        alert('출발지와 도착지 주소를 지도에서 선택하세요.');
+      }
+    });
+  </script>
+</body>
+</html>

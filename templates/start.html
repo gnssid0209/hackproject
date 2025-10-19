@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FindIt</title>
+  <style>
+    :root {
+      --blue-600: #0366d6;
+      --blue-700: #0256b0;
+      --blue-900: #01355a;
+      --yellow-400: #ffd54a;
+      --yellow-500: #ffca28;
+      --bg-from: #e8f3ff;
+      --bg-to: #fff9e6;
+      --radius: 18px;
+      --shadow: 0 8px 20px rgba(3, 102, 214, 0.18);
+      font-family: "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom right, var(--bg-from), var(--bg-to));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .mainscreen {
+      text-align: center;
+      padding: 40px 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 22px;
+      box-shadow: 0 10px 30px rgba(4, 20, 70, 0.08);
+    }
+
+    .mainscreen img {
+      max-width: 240px;
+      height: auto;
+      margin-bottom: 30px;
+    }
+
+    .title {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: var(--blue-900);
+    }
+
+    .subtitle {
+      font-size: 18px;
+      margin-bottom: 30px;
+      color: #444;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      max-width: 260px;
+      margin: 12px auto;
+      padding: 16px;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+    }
+
+    .btn:active {
+      transform: translateY(2px);
+    }
+
+    .regbtn {
+      background: linear-gradient(180deg, var(--blue-600), var(--blue-700));
+      color: white;
+      box-shadow: 0 12px 30px rgba(3, 102, 214, 0.18);
+    }
+
+    .schbtn {
+      background: linear-gradient(180deg, var(--yellow-400), var(--yellow-500));
+      color: var(--blue-900);
+      box-shadow: 0 12px 30px rgba(255, 197, 40, 0.12);
+    }
+
+    .logbtn {
+      background: linear-gradient(180deg, #4caf50, #388e3c);
+      color: white;
+      box-shadow: 0 12px 30px rgba(76, 175, 80, 0.18);
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.05);
+    }
+
+    @media (max-width: 600px) {
+      .title {
+        font-size: 26px;
+      }
+      .subtitle {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mainscreen">
+    <img src="/static/images/FindIt ver2.png">
+    <h1 class="title">분실물 찾기</h1>
+    <div class="subtitle">내가 잃어버린 물건, 우리 동네가 함께 찾아요</div>
+
+    <form action="/lost" method="get">
+        <button class="btn regbtn">분실물 등록하기</button>
+    </form>
+    <form action="/find" method="get">
+    <button class="btn schbtn" type="submit">분실물 찾기</button>
+    </form>
+    <form action="/register" method="get">
+        <button class="btn logbtn">회원가입하기</button>
+    </form>
+    <form action="/login" method="get">
+        <button class="btn logbtn">로그인</button>
+    </form>
+  </div>
+
+</body>
+</html>
